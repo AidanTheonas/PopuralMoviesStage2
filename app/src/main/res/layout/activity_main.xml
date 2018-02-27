@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.udacity.popularmoviesstgone.MainActivity">
+
+    <include
+        android:id="@+id/prog_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        layout="@layout/progress_error_layout"/>
+    <Button
+        android:id="@+id/btn_refresh"
+        android:visibility="gone"
+        android:onClick="reloadMovieList"
+        android:layout_below="@+id/prog_error_layout"
+        android:layout_centerHorizontal="true"
+        android:text="@string/refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <GridView
+        android:id="@+id/gv_movies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:stretchMode="columnWidth"
+        android:numColumns="auto_fit"/>
+
+</RelativeLayout>
