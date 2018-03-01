@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.udacity.popularmoviesstgone.Model.Movies;
+import com.udacity.popularmoviesstgone.R;
 
 import java.util.List;
 
@@ -53,6 +54,8 @@ public class MoviePostersAdapter extends BaseAdapter {
         imageView.setContentDescription(movies.getMovieTitle());
         Picasso.with(context)
                 .load(movies.getMoviePoster())
+                .placeholder(R.drawable.poster_placeholder)
+                .error(R.drawable.image_error)
                 .into(imageView);
         return imageView;
     }

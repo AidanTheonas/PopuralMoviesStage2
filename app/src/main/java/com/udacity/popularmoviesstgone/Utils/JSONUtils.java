@@ -15,11 +15,14 @@ import static com.udacity.popularmoviesstgone.MainActivity.POSTER_PATH_BASE_URL;
  */
 
 public class JSONUtils {
+    private static final String MOVIE_ID = "id";
     private static final String MOVIE_TITLE = "title";
     private static final String RELEASE_DATE = "release_date";
     private static final String MOVIE_POSTER = "poster_path";
     private static final String VOTE_AVERAGE = "vote_average";
     private static final String PLOT_SYNOPSIS = "overview";
+
+
     public static List<Movies> parseMovieJson(String json){
         List<Movies> moviesList = new ArrayList<>();
         try {
@@ -30,6 +33,7 @@ public class JSONUtils {
             for(int i=0;i<jsonMoviesArray.length();i++){
                 JSONObject jsonObject = new JSONObject(jsonMoviesArray.get(i).toString());
                 Movies movies = new Movies(
+                        jsonObject.optString(MOVIE_ID),
                         jsonObject.optString(MOVIE_TITLE),
                         jsonObject.optString(RELEASE_DATE),
                         POSTER_PATH_BASE_URL.concat(jsonObject.optString(MOVIE_POSTER)),

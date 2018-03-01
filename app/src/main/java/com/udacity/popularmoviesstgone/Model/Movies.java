@@ -4,12 +4,27 @@ package com.udacity.popularmoviesstgone.Model;
  * Created by Aidan on 2/26/2018.
  */
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Movies implements Serializable{
-    private String movieTitle,releaseDate,moviePoster,voteAverage,plotSynopsis;
+
+public class Movies implements Parcelable {
+    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
+        @Override
+        public Movies createFromParcel(Parcel in) {
+            return new Movies(in);
+        }
+
+        @Override
+        public Movies[] newArray(int size) {
+            return new Movies[size];
+        }
+    };
+    private String movieID, movieTitle, releaseDate, moviePoster, voteAverage, plotSynopsis;
     public Movies(){}
-    public Movies(String movieTitle,String releaseDate,String moviePoster,String voteAverage,String plotSynopsis){
+
+    public Movies(String movieID, String movieTitle, String releaseDate, String moviePoster, String voteAverage, String plotSynopsis) {
+        this.movieID = movieID;
         this.movieTitle = movieTitle;
         this.releaseDate = releaseDate;
         this.moviePoster = moviePoster;
@@ -17,43 +32,75 @@ public class Movies implements Serializable{
         this.plotSynopsis = plotSynopsis;
     }
 
-    public void setMoviePoster(String moviePoster) {
-        this.moviePoster = moviePoster;
+    private Movies(Parcel in) {
+        movieID = in.readString();
+        movieTitle = in.readString();
+        releaseDate = in.readString();
+        moviePoster = in.readString();
+        voteAverage = in.readString();
+        plotSynopsis = in.readString();
     }
 
     public String getMoviePoster() {
         return moviePoster;
     }
 
-    public void setPlotSynopsis(String plotSynopsis) {
-        this.plotSynopsis = plotSynopsis;
+    public void setMoviePoster(String moviePoster) {
+        this.moviePoster = moviePoster;
     }
 
     public String getPlotSynopsis() {
         return plotSynopsis;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setPlotSynopsis(String plotSynopsis) {
+        this.plotSynopsis = plotSynopsis;
     }
 
     public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setMovieTitle(String movieTitle) {
-        this.movieTitle = movieTitle;
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public String getMovieTitle() {
         return movieTitle;
     }
 
-    public void setVoteAverage(String voteAverage) {
-        this.voteAverage = voteAverage;
+    public void setMovieTitle(String movieTitle) {
+        this.movieTitle = movieTitle;
     }
 
     public String getVoteAverage() {
         return voteAverage;
+    }
+
+    public void setVoteAverage(String voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    public String getMovieID() {
+        return movieID;
+    }
+
+    public void setMovieID(String movieID) {
+        this.movieID = movieID;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(movieID);
+        dest.writeString(movieTitle);
+        dest.writeString(releaseDate);
+        dest.writeString(moviePoster);
+        dest.writeString(voteAverage);
+        dest.writeString(plotSynopsis);
     }
 }

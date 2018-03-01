@@ -1,9 +1,5 @@
 package com.udacity.popularmoviesstgone.Loader;
 
-/*
- * Created by Aidan on 2/26/2018.
- */
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
@@ -13,14 +9,18 @@ import com.udacity.popularmoviesstgone.Utils.NetworkUtils;
 
 import java.net.URL;
 
-import static com.udacity.popularmoviesstgone.MainActivity.MOVIE_URL_EXTRA;
+import static com.udacity.popularmoviesstgone.MovieDetailsActivity.REVIEWS_URL_EXTRA;
 
-public class PopularMoviesLoader {
-    public static class LoadMovies extends AsyncTaskLoader<String> {
+/**
+ * PopuralMoviesStage2 Created by aidan on 01/03/2018.
+ */
+
+public class MovieReviewsLoader {
+    public static class LoadReviews extends AsyncTaskLoader<String> {
         String mMoviewJson;
         Bundle queryURL;
 
-        public LoadMovies(Context context, Bundle queryURL) {
+        public LoadReviews(Context context, Bundle queryURL) {
             super(context);
             this.queryURL = queryURL;
         }
@@ -42,7 +42,7 @@ public class PopularMoviesLoader {
         @Override
         public String loadInBackground() {
             try {
-                String movieQueryUrlString = queryURL.getString(MOVIE_URL_EXTRA);
+                String movieQueryUrlString = queryURL.getString(REVIEWS_URL_EXTRA);
                 if (movieQueryUrlString == null || TextUtils.isEmpty(movieQueryUrlString)) {
                     return null;
                 }
