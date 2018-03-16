@@ -48,6 +48,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     private static final String REVIEW_AUTHOR = "author";
     private static final String REVIEW_COMMENTS = "content";
     private static final String REVIEW_URL = "url";
+    private static final String MOVIE_REVIEWS_STATE = "movie_reviews_state";
+    private static final String MOVIE_TRAILERS_STATE = "movie_trailers_state";
     public List<MovieTrailers> movieTrailers;
     public List<MovieReviews> movieReviews;
     @BindView(R.id.iv_poster)
@@ -77,7 +79,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         setContentView(R.layout.activity_movie_details);
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        if (intent == null) {
+        if (intent.getExtras() == null) {
             Toast.makeText(this,"Sorry! An Error occurred",Toast.LENGTH_LONG).show();
         } else {
             Movies movies = intent.getParcelableExtra(MOVIE_DETAILS_EXTRA);
@@ -91,28 +93,40 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             tvVoteAverage.setText(movies.getVoteAverage().concat("/10"));
             tvSynopsis.setText(movies.getPlotSynopsis());
 
-            //Initialize movie trailer recycler view
-            movieTrailers = new ArrayList<>();
-            movieTrailersAdapter = new MovieTrailersAdapter(movieTrailers, this);
+            if(savedInstanceState != null){
+                movieTrailersAdapter = savedInstanceState.getParcelable(MOVIE_TRAILERS_STATE);
+                movieReviewsAdapter = savedInstanceState.getParcelable(MOVIE_REVIEWS_STATE);
+            }else{
+                movieTrailers = new ArrayList<>();
+                movieTrailersAdapter = new MovieTrailersAdapter(movieTrailers, this);
+                movieReviews = new ArrayList<>();
+                movieReviewsAdapter = new MovieReviewsAdapter(movieReviews);
+            }
+
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             moviesTrailerRecyclerView.setLayoutManager(mLayoutManager);
             moviesTrailerRecyclerView.setItemAnimator(new DefaultItemAnimator());
             moviesTrailerRecyclerView.setAdapter(movieTrailersAdapter);
             moviesTrailerRecyclerView.setNestedScrollingEnabled(false);
 
-            //Initialize movie reviews recycler view
-            movieReviews = new ArrayList<>();
-            movieReviewsAdapter = new MovieReviewsAdapter(movieReviews);
             RecyclerView.LayoutManager rLayoutManager = new LinearLayoutManager(getApplicationContext());
             moviesReviewRecyclerView.setLayoutManager(rLayoutManager);
             moviesReviewRecyclerView.setItemAnimator(new DefaultItemAnimator());
             moviesReviewRecyclerView.setAdapter(movieReviewsAdapter);
             moviesReviewRecyclerView.setNestedScrollingEnabled(false);
 
-
-            loadMovieTrailers(movies.getMovieID());
-            loadReviews(movies.getMovieID());
+            if(savedInstanceState == null){
+                loadMovieTrailers(movies.getMovieID());
+                loadReviews(movies.getMovieID());
+            }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(MOVIE_REVIEWS_STATE,movieReviewsAdapter);
+        outState.putParcelable(MOVIE_TRAILERS_STATE,movieTrailersAdapter);
     }
 
     public String movieTrailerURL(String id) {

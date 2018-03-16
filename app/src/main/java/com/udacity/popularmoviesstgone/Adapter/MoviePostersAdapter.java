@@ -1,6 +1,8 @@
 package com.udacity.popularmoviesstgone.Adapter;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,13 +19,30 @@ import java.util.List;
  * Created by Aidan on 2/26/2018.
  */
 
-public class MoviePostersAdapter extends BaseAdapter {
+public class MoviePostersAdapter extends BaseAdapter implements Parcelable {
     private Context context;
     private List<Movies> posterList;
     public MoviePostersAdapter(Context context, List<Movies> posterList){
         this.context = context;
         this.posterList = posterList;
     }
+
+    private MoviePostersAdapter(Parcel in) {
+        posterList = in.createTypedArrayList(Movies.CREATOR);
+    }
+
+    public static final Creator<MoviePostersAdapter> CREATOR = new Creator<MoviePostersAdapter>() {
+        @Override
+        public MoviePostersAdapter createFromParcel(Parcel in) {
+            return new MoviePostersAdapter(in);
+        }
+
+        @Override
+        public MoviePostersAdapter[] newArray(int size) {
+            return new MoviePostersAdapter[size];
+        }
+    };
+
     @Override
     public int getCount() {
         return posterList.size();
@@ -46,7 +65,7 @@ public class MoviePostersAdapter extends BaseAdapter {
         if (convertView == null) {
             imageView = new ImageView(context);
             imageView.setAdjustViewBounds(true);
-            imageView.setLayoutParams(new GridView.LayoutParams( ViewGroup.LayoutParams.WRAP_CONTENT,  ViewGroup.LayoutParams.WRAP_CONTENT));
+            imageView.setLayoutParams(new GridView.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,  ViewGroup.LayoutParams.MATCH_PARENT));
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         } else {
             imageView = (ImageView) convertView;
@@ -58,5 +77,15 @@ public class MoviePostersAdapter extends BaseAdapter {
                 .error(R.drawable.image_error)
                 .into(imageView);
         return imageView;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(posterList);
     }
 }

@@ -4,6 +4,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,7 +23,7 @@ import java.util.List;
  * PopuralMoviesStage2 Created by aidan on 01/03/2018.
  */
 
-public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdapter.ViewHolder> implements View.OnClickListener {
+public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdapter.ViewHolder> implements View.OnClickListener,Parcelable {
 
     private List<MovieTrailers> movieTrailers;
     private Context context;
@@ -30,6 +32,22 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
         this.movieTrailers = movieTrailers;
         this.context = context;
     }
+
+    private MovieTrailersAdapter(Parcel in) {
+        movieTrailers = in.createTypedArrayList(MovieTrailers.CREATOR);
+    }
+
+    public static final Creator<MovieTrailersAdapter> CREATOR = new Creator<MovieTrailersAdapter>() {
+        @Override
+        public MovieTrailersAdapter createFromParcel(Parcel in) {
+            return new MovieTrailersAdapter(in);
+        }
+
+        @Override
+        public MovieTrailersAdapter[] newArray(int size) {
+            return new MovieTrailersAdapter[size];
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -70,6 +88,16 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
         } catch (ActivityNotFoundException ex) {
             context.startActivity(webIntent);
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(movieTrailers);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

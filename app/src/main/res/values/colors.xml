@@ -8,4 +8,5 @@
     <color name="redColor">#cc181e</color>
     <color name="transparentColor">#00000000</color>
     <color name="separator_color">#CCCCCC</color>
+    <color name="colorDarkAccent">#455A64</color>
 </resources>

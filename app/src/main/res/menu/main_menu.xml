@@ -3,11 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/most_pupular"
-        android:title="@string/most_popular"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/highest_rated"
-        android:title="@string/highest_rated"
-        app:showAsAction="never"/>
+        android:id="@+id/refresh_list"
+        android:title="@string/refresh_list"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        app:showAsAction="ifRoom" />
+
+    <group android:id="@+id/gp_movie_cat"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/most_popular"
+            android:title="@string/most_popular"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/highest_rated"
+            android:title="@string/highest_rated"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/favorites"
+            android:title="@string/favorites"
+            app:showAsAction="never" />
+    </group>
 </menu>

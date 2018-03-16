@@ -1,5 +1,7 @@
 package com.udacity.popularmoviesstgone.Adapter;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,13 +18,29 @@ import java.util.List;
  * PopuralMoviesStage2 Created by aidan on 01/03/2018.
  */
 
-public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapter.ViewHolder> {
+public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapter.ViewHolder> implements Parcelable {
 
     private List<MovieReviews> movieReviews;
 
     public MovieReviewsAdapter(List<MovieReviews> movieReviews) {
         this.movieReviews = movieReviews;
     }
+
+    private MovieReviewsAdapter(Parcel in) {
+        movieReviews = in.createTypedArrayList(MovieReviews.CREATOR);
+    }
+
+    public static final Creator<MovieReviewsAdapter> CREATOR = new Creator<MovieReviewsAdapter>() {
+        @Override
+        public MovieReviewsAdapter createFromParcel(Parcel in) {
+            return new MovieReviewsAdapter(in);
+        }
+
+        @Override
+        public MovieReviewsAdapter[] newArray(int size) {
+            return new MovieReviewsAdapter[size];
+        }
+    };
 
     @NonNull
     @Override
@@ -43,6 +61,15 @@ public class MovieReviewsAdapter extends RecyclerView.Adapter<MovieReviewsAdapte
     @Override
     public int getItemCount() {
         return movieReviews.size();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
