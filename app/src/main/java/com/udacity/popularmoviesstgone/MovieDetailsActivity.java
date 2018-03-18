@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.udacity.popularmoviesstgone.MainActivity.MOVIE_DETAILS_EXTRA;
 
@@ -52,9 +54,11 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     private static final String MOVIE_TRAILERS_STATE = "movie_trailers_state";
     public List<MovieTrailers> movieTrailers;
     public List<MovieReviews> movieReviews;
+    @BindView(R.id.toolBar)
+    Toolbar toolbar;
     @BindView(R.id.iv_poster)
     ImageView ivMoviePoster;
-    @BindView(R.id.tv_title)
+    @BindView(R.id.tv_movie_title)
     TextView tvTitle;
     @BindView(R.id.tv_release_date)
     TextView tvReleaseDate;
@@ -78,6 +82,11 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
         ButterKnife.bind(this);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+            setSupportActionBar(toolbar);
+        }
+
         Intent intent = getIntent();
         if (intent.getExtras() == null) {
             Toast.makeText(this,"Sorry! An Error occurred",Toast.LENGTH_LONG).show();
@@ -120,6 +129,16 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
                 loadReviews(movies.getMovieID());
             }
         }
+    }
+
+    @OnClick(R.id.back_to_previous)
+    void backToMoviesList() {
+        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override

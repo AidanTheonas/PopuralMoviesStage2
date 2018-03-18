@@ -7,7 +7,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +33,6 @@ import static com.udacity.popularmoviesstgone.Utils.Helpers.PreferenceHelpers.se
 import static com.udacity.popularmoviesstgone.Utils.JSONUtils.parseMovieJson;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
-    List<Movies> postersList;
     public static final String POPURAL_MOVIES_URL = "http://api.themoviedb.org/3/movie/popular?api_key=";
     public static final String TOP_RATED_MOVIES_URL = "http://api.themoviedb.org/3/movie/top_rated?api_key=";
     public static final String POSTER_PATH_BASE_URL = "http://image.tmdb.org/t/p/w185/";
@@ -43,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String RESULTS_KEY = "results";
     public static final String MOVIE_DETAILS_EXTRA = "movie_details";
     public static final String MOVIE_POSTER_ADAPTER_STATE = "movie_poster_adapter";
+    List<Movies> postersList;
     String currentURL = "";
 
     @BindView(R.id.gv_movies)
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         ButterKnife.bind(this);
 
 
+        refreshMovieList.setDistanceToTriggerSync(100);
         refreshMovieList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -155,8 +155,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public void loadLastUserMovieCategoryChoice(){
         MenuItem menuItem = menu.findItem(getMovieCategory(this,R.id.most_popular));
-        menuItem.setChecked(true);
-        onOptionsItemSelected(menuItem);
+        if (menuItem != null) {
+            menuItem.setChecked(true);
+            onOptionsItemSelected(menuItem);
+        } else {
+            loadMovies(POPURAL_MOVIES_URL.concat(getResources().getString(R.string.movies_db_key)));
+            menuItem = menu.findItem(R.id.most_popular);
+            menuItem.setChecked(true);
+        }
     }
 
     public void loadMovies(String url){

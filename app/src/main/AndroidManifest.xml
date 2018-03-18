@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".MovieDetailsActivity"
             android:parentActivityName=".MainActivity"
+            android:theme="@style/SecondaryTheme"
             tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

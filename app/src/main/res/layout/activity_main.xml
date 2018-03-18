@@ -1,39 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/swipe_refresh"
     tools:context="com.udacity.popularmoviesstgone.MainActivity">
-
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
     <include
         android:id="@+id/prog_error_layout"
+        layout="@layout/progress_error_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        layout="@layout/progress_error_layout"/>
+        android:layout_centerInParent="true" />
     <Button
         android:id="@+id/btn_refresh"
-        android:visibility="gone"
-        android:onClick="reloadMovieList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/prog_error_layout"
         android:layout_centerHorizontal="true"
+        android:onClick="reloadMovieList"
         android:text="@string/refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:visibility="gone" />
 
-    <GridView
-        android:id="@+id/gv_movies"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:stretchMode="columnWidth"
-        android:numColumns="auto_fit"/>
+        android:layout_height="wrap_content">
+
+        <GridView
+            android:id="@+id/gv_movies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
