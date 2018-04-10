@@ -14,14 +14,6 @@
         android:background="@color/colorAccent"
         android:minHeight="?attr/actionBarSize">
 
-        <ImageButton
-            android:id="@+id/back_to_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparentColor"
-            android:contentDescription="@string/back_to_movies_list"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back_white_24dp" />
 
         <TextView
             android:id="@+id/tv_movie_title"
@@ -29,7 +21,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:padding="16dp"
             android:textAlignment="gravity"
             android:textColor="@color/whiteColor"
             android:textSize="20sp"
@@ -43,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/whiteColor"
+        android:fillViewport="false"
         android:scrollbars="none">
 
         <RelativeLayout
@@ -117,6 +109,7 @@
 
             <Button
                 android:id="@+id/btn_favorite"
+                android:tag="0"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_below="@+id/tv_vote_average"
@@ -159,6 +152,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/trailers"
+                android:visibility="gone"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -181,6 +175,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:text="@string/reviews"
+                android:visibility="gone"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

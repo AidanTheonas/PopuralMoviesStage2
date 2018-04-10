@@ -21,7 +21,8 @@ public class Movies implements Parcelable {
         }
     };
     private String movieID, movieTitle, releaseDate, moviePoster, voteAverage, plotSynopsis;
-    public Movies(){}
+
+    public Movies() {}
 
     public Movies(String movieID, String movieTitle, String releaseDate, String moviePoster, String voteAverage, String plotSynopsis) {
         this.movieID = movieID;

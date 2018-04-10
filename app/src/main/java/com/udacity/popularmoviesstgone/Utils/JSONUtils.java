@@ -1,5 +1,7 @@
 package com.udacity.popularmoviesstgone.Utils;
 
+import android.util.Log;
+
 import com.udacity.popularmoviesstgone.Model.Movies;
 
 import org.json.JSONArray;

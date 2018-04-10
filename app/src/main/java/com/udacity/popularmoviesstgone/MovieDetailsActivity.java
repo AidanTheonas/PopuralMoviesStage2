@@ -10,8 +10,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,22 +78,28 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     @BindView(R.id.rv_reviews)
     RecyclerView moviesReviewRecyclerView;
     MovieReviewsAdapter movieReviewsAdapter;
+    @BindView(R.id.btn_favorite)
+    Button btnFavorite;
+
+    Movies movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
         ButterKnife.bind(this);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-            setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("");
+            getSupportActionBar().setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp));
         }
 
         Intent intent = getIntent();
         if (intent.getExtras() == null) {
             Toast.makeText(this,"Sorry! An Error occurred",Toast.LENGTH_LONG).show();
         } else {
-            Movies movies = intent.getParcelableExtra(MOVIE_DETAILS_EXTRA);
+            movies = intent.getParcelableExtra(MOVIE_DETAILS_EXTRA);
             Picasso.with(this)
                     .load(movies.getMoviePoster())
                     .placeholder(R.drawable.poster_placeholder)
@@ -105,6 +113,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             if(savedInstanceState != null){
                 movieTrailersAdapter = savedInstanceState.getParcelable(MOVIE_TRAILERS_STATE);
                 movieReviewsAdapter = savedInstanceState.getParcelable(MOVIE_REVIEWS_STATE);
+                if(movieTrailersAdapter.getItemCount() > 0) tvTrailersTitle.setVisibility(View.VISIBLE);
+                if(movieReviewsAdapter.getItemCount() > 0) tvReviewsTitle.setVisibility(View.VISIBLE);
             }else{
                 movieTrailers = new ArrayList<>();
                 movieTrailersAdapter = new MovieTrailersAdapter(movieTrailers, this);
@@ -131,14 +141,54 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         }
     }
 
-    @OnClick(R.id.back_to_previous)
-    void backToMoviesList() {
-        onBackPressed();
+    private String shareMovieString(String movieName,String movieID){
+        String watchThisMovie = getResources().getString(R.string.watch_this_movie);
+        String preInfo = watchThisMovie.concat("-").concat(movieName).concat("\n");
+        return preInfo.concat("https://www.themoviedb.org/movie/").concat(movieID);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finish();
+    }
+
+    @OnClick(R.id.btn_favorite)
+    void toggleFavorite(){
+        switch (btnFavorite.getTag().toString().trim()){
+            case "0":
+                    btnFavorite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_favorite,0,0,0);
+                    btnFavorite.setTag("1");
+                    Toast.makeText(this, R.string.added_to_favorites,Toast.LENGTH_SHORT).show();
+                break;
+
+            case "1":
+                btnFavorite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_not_favorite,0,0,0);
+                btnFavorite.setTag("0");
+                Toast.makeText(this, R.string.removed_from_favorites,Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.movie_details_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share_movie:
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        shareMovieString(movies.getMovieTitle(),movies.getMovieID()));
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+                return true;
+        }
+        return (super.onOptionsItemSelected(item));
     }
 
     @Override
@@ -222,7 +272,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     }
 
     public void parseTrailerJson(String json) {
-        Log.e("JSON:", json);
         try {
             if (json == null || json.trim().equals("")) {
                 return;
@@ -236,7 +285,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
                 );
                 movieTrailers.add(trailer);
             }
-            if (movieTrailers.size() == 0) tvTrailersTitle.setVisibility(View.GONE);
+            if (movieTrailers.size() > 0) tvTrailersTitle.setVisibility(View.VISIBLE);
             movieTrailersAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
@@ -259,7 +308,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
                 );
                 movieReviews.add(reviews);
             }
-            if (movieReviews.size() == 0) tvReviewsTitle.setVisibility(View.GONE);
+            if (movieReviews.size() > 0) tvReviewsTitle.setVisibility(View.VISIBLE);
             movieReviewsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
