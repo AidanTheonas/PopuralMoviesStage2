@@ -1,5 +1,5 @@
 <resources>
-    <string name="movies_db_key">MOVIES_DB_API</string>
+    <string name="movies_db_key">MOVIES_DB_KEY</string>
     <string name="app_name">UdacityMoviesApp</string>
     <string name="most_popular">Most popular</string>
     <string name="highest_rated">Highest rated</string>
@@ -27,4 +27,8 @@
     <string name="share_movie">Share movie</string>
     <string name="share">Share</string>
     <string name="watch_this_movie">Watch this movie</string>
+    <string name="failed_to_add_record">Failed to add a record into</string>
+    <string name="no_favorite_movies">Sorry! No favorite movies in your list</string>
+    <string name="error_fav_movie_not_added">Error! Favorite movie not added</string>
+    <string name="error_fav_movie_not_removed">Error! Favorite movie not removed</string>
 </resources>

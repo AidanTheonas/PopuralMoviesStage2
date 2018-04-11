@@ -9,9 +9,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:fullBackupContent="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +29,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <provider
+            android:name=".Data.FavoriteMoviesContentProvider"
+            android:authorities="com.udacity.popularmoviesstgone.FavoriteMoviesProvider"
+            android:exported="false"
+            tools:ignore="InnerclassSeparator" />
+
     </application>
 
 </manifest>

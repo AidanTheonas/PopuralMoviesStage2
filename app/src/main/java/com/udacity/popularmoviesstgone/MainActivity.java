@@ -1,6 +1,10 @@
 package com.udacity.popularmoviesstgone;
 
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -17,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.udacity.popularmoviesstgone.Adapter.MoviePostersAdapter;
+import com.udacity.popularmoviesstgone.Data.FavoriteMoviesContentProvider;
+import com.udacity.popularmoviesstgone.Data.FavoriteMoviesContract;
 import com.udacity.popularmoviesstgone.Loader.PopularMoviesLoader;
 import com.udacity.popularmoviesstgone.Model.Movies;
 
@@ -118,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         switch (item.getItemId()) {
             case R.id.favorites:
-                loadMovies(POPURAL_MOVIES_URL.concat(getResources().getString(R.string.movies_db_key)));
+                FavoriteMoviesFetchTask favoriteMoviesFetchTask = new FavoriteMoviesFetchTask();
+                favoriteMoviesFetchTask.execute();
                 updateTitle(getResources().getString(R.string.favorite_movies));
                 return true;
 
@@ -190,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String data) {
         progressBar.setVisibility(View.GONE);
+        tvErrorMessage.setText(R.string.error_occured);
         if(refreshMovieList.isRefreshing()){
             refreshMovieList.setRefreshing(false);
         }
@@ -222,4 +230,52 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(@NonNull Loader<String> loader) {}
+
+    @SuppressLint("StaticFieldLeak")
+    public class FavoriteMoviesFetchTask extends AsyncTask<Void, Void, Cursor> {
+
+        @Override
+        protected Cursor doInBackground(Void... voids) {
+            ContentResolver contentResolver = getContentResolver();
+            return contentResolver.query(FavoriteMoviesContentProvider.CONTENT_URI, null, null, null, null);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+            if (refreshMovieList.isRefreshing()) {
+                refreshMovieList.setRefreshing(false);
+            }
+            progressBar.setVisibility(View.GONE);
+            List<Movies> moviesList = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                Movies movies = new Movies(
+                        cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID)),
+                        cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_RELEASE_DATE)),
+                        POSTER_PATH_BASE_URL.concat(cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER))),
+                        cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_VOTE_AVERAGE)),
+                        cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_PLOT_SYNOPSIS))
+                );
+                moviesList.add(movies);
+            }
+
+            if (!moviesList.isEmpty()) {
+                postersList = moviesList;
+                moviePostersAdapter = new MoviePostersAdapter(getBaseContext(), postersList);
+                gridview.setAdapter(moviePostersAdapter);
+            } else {
+                gridview.setAdapter(null);
+                tvErrorMessage.setText(R.string.no_favorite_movies);
+                tvErrorMessage.setVisibility(View.VISIBLE);
+            }
+            cursor.close();
+        }
+    }
 }

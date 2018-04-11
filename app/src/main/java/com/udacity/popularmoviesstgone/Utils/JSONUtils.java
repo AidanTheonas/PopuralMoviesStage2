@@ -1,7 +1,5 @@
 package com.udacity.popularmoviesstgone.Utils;
 
-import android.util.Log;
-
 import com.udacity.popularmoviesstgone.Model.Movies;
 
 import org.json.JSONArray;
@@ -9,8 +7,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.udacity.popularmoviesstgone.MainActivity.POSTER_PATH_BASE_URL;
 
 /*
  * Created by Aidan on 2/26/2018.
@@ -38,7 +34,7 @@ public class JSONUtils {
                         jsonObject.optString(MOVIE_ID),
                         jsonObject.optString(MOVIE_TITLE),
                         jsonObject.optString(RELEASE_DATE),
-                        POSTER_PATH_BASE_URL.concat(jsonObject.optString(MOVIE_POSTER)),
+                        jsonObject.optString(MOVIE_POSTER),
                         jsonObject.optString(VOTE_AVERAGE),
                         jsonObject.optString(PLOT_SYNOPSIS)
                 );

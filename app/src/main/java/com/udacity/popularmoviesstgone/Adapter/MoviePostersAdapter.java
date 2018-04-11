@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -14,6 +15,8 @@ import com.udacity.popularmoviesstgone.Model.Movies;
 import com.udacity.popularmoviesstgone.R;
 
 import java.util.List;
+
+import static com.udacity.popularmoviesstgone.MainActivity.POSTER_PATH_BASE_URL;
 
 /*
  * Created by Aidan on 2/26/2018.
@@ -71,8 +74,12 @@ public class MoviePostersAdapter extends BaseAdapter implements Parcelable {
             imageView = (ImageView) convertView;
         }
         imageView.setContentDescription(movies.getMovieTitle());
+        String posterUrl = movies.getMoviePoster();
+        if (!URLUtil.isValidUrl(movies.getMoviePoster())) {
+            posterUrl = POSTER_PATH_BASE_URL.concat(posterUrl);
+        }
         Picasso.with(context)
-                .load(movies.getMoviePoster())
+                .load(posterUrl)
                 .placeholder(R.drawable.poster_placeholder)
                 .error(R.drawable.image_error)
                 .into(imageView);

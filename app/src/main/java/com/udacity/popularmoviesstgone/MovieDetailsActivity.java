@@ -1,6 +1,10 @@
 package com.udacity.popularmoviesstgone;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -13,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,6 +26,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.udacity.popularmoviesstgone.Adapter.MovieReviewsAdapter;
 import com.udacity.popularmoviesstgone.Adapter.MovieTrailersAdapter;
+import com.udacity.popularmoviesstgone.Data.FavoriteMoviesContentProvider;
+import com.udacity.popularmoviesstgone.Data.FavoriteMoviesContract;
 import com.udacity.popularmoviesstgone.Loader.MovieReviewsLoader;
 import com.udacity.popularmoviesstgone.Loader.MovieTrailerLoader;
 import com.udacity.popularmoviesstgone.Model.MovieReviews;
@@ -38,6 +45,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.udacity.popularmoviesstgone.MainActivity.MOVIE_DETAILS_EXTRA;
+import static com.udacity.popularmoviesstgone.MainActivity.POSTER_PATH_BASE_URL;
 
 public class MovieDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
     public static final int MOVIE_TRAILERS_LOADER = 2;
@@ -100,8 +108,13 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             Toast.makeText(this,"Sorry! An Error occurred",Toast.LENGTH_LONG).show();
         } else {
             movies = intent.getParcelableExtra(MOVIE_DETAILS_EXTRA);
+            checkIfFavorite();
+            String posterUrl = movies.getMoviePoster();
+            if (!URLUtil.isValidUrl(movies.getMoviePoster())) {
+                posterUrl = POSTER_PATH_BASE_URL.concat(posterUrl);
+            }
             Picasso.with(this)
-                    .load(movies.getMoviePoster())
+                    .load(posterUrl)
                     .placeholder(R.drawable.poster_placeholder)
                     .error(R.drawable.image_error)
                     .into(ivMoviePoster);
@@ -109,6 +122,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             tvReleaseDate.setText(movies.getReleaseDate());
             tvVoteAverage.setText(movies.getVoteAverage().concat("/10"));
             tvSynopsis.setText(movies.getPlotSynopsis());
+
 
             if(savedInstanceState != null){
                 movieTrailersAdapter = savedInstanceState.getParcelable(MOVIE_TRAILERS_STATE);
@@ -141,6 +155,18 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         }
     }
 
+    private void checkIfFavorite() {
+        Uri uri = FavoriteMoviesContentProvider.CONTENT_URI.buildUpon().appendPath(movies.getMovieID()).build();
+        ContentResolver contentResolver = getContentResolver();
+        Cursor cursor = contentResolver.query(uri, null, null, null, null);
+        if (cursor == null) return;
+        if (cursor.getCount() > 0) {
+            btnFavorite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_favorite, 0, 0, 0);
+            btnFavorite.setTag(1);
+        }
+        cursor.close();
+    }
+
     private String shareMovieString(String movieName,String movieID){
         String watchThisMovie = getResources().getString(R.string.watch_this_movie);
         String preInfo = watchThisMovie.concat("-").concat(movieName).concat("\n");
@@ -155,18 +181,51 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
     @OnClick(R.id.btn_favorite)
     void toggleFavorite(){
+        ContentResolver contentResolver = getContentResolver();
+
         switch (btnFavorite.getTag().toString().trim()){
             case "0":
-                    btnFavorite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_favorite,0,0,0);
-                    btnFavorite.setTag("1");
-                    Toast.makeText(this, R.string.added_to_favorites,Toast.LENGTH_SHORT).show();
+                Uri result = contentResolver.insert(FavoriteMoviesContentProvider.CONTENT_URI, getContenValues());
+
+                if (result != null) {
+                    updateButtonStyle(R.drawable.ic_star_favorite, 1);
+
+                } else {
+                    Toast.makeText(this, R.string.error_fav_movie_not_added, Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case "1":
-                btnFavorite.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_not_favorite,0,0,0);
-                btnFavorite.setTag("0");
-                Toast.makeText(this, R.string.removed_from_favorites,Toast.LENGTH_SHORT).show();
+                Uri uri = FavoriteMoviesContentProvider.CONTENT_URI.buildUpon().appendPath(movies.getMovieID()).build();
+                if (contentResolver.delete(uri, null, null) > 0) {
+                    updateButtonStyle(R.drawable.ic_star_not_favorite, 0);
+                } else {
+                    Toast.makeText(this, R.string.error_fav_movie_not_removed, Toast.LENGTH_SHORT).show();
+                }
+
                 break;
+        }
+    }
+
+    public ContentValues getContenValues() {
+        ContentValues values = new ContentValues();
+        values.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID, movies.getMovieID());
+        values.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE, movies.getMovieTitle());
+        values.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_RELEASE_DATE, movies.getReleaseDate());
+        values.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER, movies.getMoviePoster());
+        values.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_VOTE_AVERAGE, movies.getVoteAverage());
+        values.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_PLOT_SYNOPSIS, movies.getPlotSynopsis());
+
+        return values;
+    }
+
+    public void updateButtonStyle(int drawable, int tag) {
+        btnFavorite.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
+        btnFavorite.setTag(tag);
+        if (tag == 1) {
+            Toast.makeText(this, R.string.added_to_favorites, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
         }
     }
 
