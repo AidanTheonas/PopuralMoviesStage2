@@ -170,7 +170,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     private String shareMovieString(String movieName,String movieID){
         String watchThisMovie = getResources().getString(R.string.watch_this_movie);
         String preInfo = watchThisMovie.concat("-").concat(movieName).concat("\n");
-        return preInfo.concat("https://www.themoviedb.org/movie/").concat(movieID);
+        String shareUrl = preInfo.concat("https://www.themoviedb.org/movie/").concat(movieID);
+        if (movieTrailers.get(0) != null) {
+            shareUrl = "http://www.youtube.com/watch?v=".concat(movieTrailers.get(0).getTrailerID().trim());
+        }
+
+        return shareUrl;
     }
 
     @Override
